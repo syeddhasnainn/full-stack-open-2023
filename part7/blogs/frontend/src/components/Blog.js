@@ -1,4 +1,4 @@
-import Togglable from './Togglable'
+import Toggleable from './Toggleable'
 import { useRef } from 'react'
 
 const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
@@ -27,10 +27,10 @@ const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
       <div className='toggle'>
         <span className='title'>{blog.title}</span>
         <span className='author'>{blog.author} </span>
-        <Togglable buttonLabel='view' ref={blogRef}>
+        <Toggleable buttonLabel='view' ref={blogRef}>
           {blog.url} <br />
           {blog.likes} <button id="like-button" type="submit" onClick={handleLikeUpdate}>like</button><br />
-        </Togglable>
+        </Toggleable>
       </div>
       {user.username === blog.author ? <button onClick={handleDelete}>remove</button> : null}
     </div>
