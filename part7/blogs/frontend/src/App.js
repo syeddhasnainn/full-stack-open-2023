@@ -8,7 +8,7 @@ import Togglable from './components/Togglable'
 import CreateBlog from './components/CreateBlog'
 import { useNotificationDispatch } from './NotificationContext'
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createBlogs, getBlogs, updateBlog } from './requests'
+import {createBlogs, deleteBlogs, getBlogs, updateBlog} from './requests'
 
 const App = () => {
 
@@ -31,6 +31,12 @@ const App = () => {
   })
 
   const createBlogMutation = useMutation(createBlogs, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    }
+  })
+
+  const deleteBlogMutation = useMutation(deleteBlogs, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs')
     }
@@ -90,9 +96,8 @@ const App = () => {
 
   const deleteBlog = async (id) => {
     try {
-      await blogService.remove(id)
+      await deleteBlogMutation.mutate({id})
       const updatedBlog = blogs.filter(blog => blog.id !== id)
-      setBlogs(updatedBlog)
       dispatch({ type: 'SHOW', payload: 'Blog Removed' })
     }
 

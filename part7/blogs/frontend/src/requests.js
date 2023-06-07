@@ -12,4 +12,8 @@ export const createBlogs = (newBlog) => {
         .then(res=>res.data)
 }
 
+export const deleteBlogs = (blogObject) => {
+    return axios.delete(`${baseUrl}/${blogObject.id}`).then(res=>res.data)
+}
+
 export const updateBlog = updatedBlog => axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog).then(res=>res.data)

@@ -24,7 +24,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
 
   return (
     <div style={blogStyle} className='blog'>
-      <div class='toggle'>
+      <div className='toggle'>
         <span className='title'>{blog.title}</span>
         <span className='author'>{blog.author} </span>
         <Togglable buttonLabel='view' ref={blogRef}>
