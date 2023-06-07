@@ -1,15 +1,14 @@
 import { useState } from "react"
 
 
-const CreateBlog = ({ createBlog }) => {
-
+const CreateBlog = ({ createBlog, token }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
     const addBlog = async (event) => {
         event.preventDefault()
-        createBlog({title, author,url})
+        createBlog({title, author,url}, token)
         setTitle('')
         setAuthor('')
         setUrl('')

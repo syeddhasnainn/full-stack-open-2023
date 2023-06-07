@@ -13,14 +13,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
   const blogRef = useRef()
 
   const handleLikeUpdate = async () => {
-    const updatedBlog = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-      user: blog.id,
-    }
-    updateLikes(blog.id, updatedBlog)
+    updateLikes(blog)
   }
 
   const handleDelete = async () => {

@@ -8,13 +8,29 @@ import Togglable from './components/Togglable'
 import CreateBlog from './components/CreateBlog'
 import { useNotificationDispatch } from './NotificationContext'
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { createBlogs, getBlogs } from './requests'
+import { createBlogs, getBlogs, updateBlog } from './requests'
 
 const App = () => {
+
+  useEffect(() => {
+    const loggedInUser = window.localStorage.getItem('loggedBloguser')
+    if (loggedInUser) {
+      const user = JSON.parse(loggedInUser)
+      setUser(user)
+    }
+  }, [])
+
   const queryClient = useQueryClient()
 
   const noteFormRef = useRef()
-  const newBlogMutation = useMutation(createBlogs, {
+
+  const updateBlogMutation = useMutation(updateBlog, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    }
+  })
+
+  const createBlogMutation = useMutation(createBlogs, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs')
     }
@@ -26,34 +42,25 @@ const App = () => {
 
   const dispatch = useNotificationDispatch()
 
-  const result = useQuery('blogs', getBlogs, {retry:false})
+  const result = useQuery('blogs', getBlogs, {retry:true})
   const blogs = result.data
+
+
   if ( result.isLoading ) {
     return <div>loading data...</div>
   }
-
-  useEffect(() => {
-    const loggedInUser = window.localStorage.getItem('loggedBloguser')
-    if (loggedInUser) {
-      const user = JSON.parse(loggedInUser)
-      setUser(user)
-    }
-  }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
-
       window.localStorage.setItem(
         'loggedBloguser', JSON.stringify(user)
       )
-
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-
     } catch (exception) {
 
       dispatch({ type: 'SHOW', payload: 'wrong username or password' })
@@ -69,11 +76,9 @@ const App = () => {
     setUser(null)
   }
 
-  const updateLikes = async (id, blogToUpdate) => {
+  const updateLikes = async (blog) => {
     try {
-      const updatedBlog = await blogService.update(id, blogToUpdate)
-      const newBlogs = blogs.map(blog => blog.id === id ? updatedBlog : blog)
-      setBlogs(newBlogs)
+      updateBlogMutation.mutate({...blog, likes:blog.likes+1})
       dispatch({ type: 'SHOW', payload: 'liked blog' })
       setTimeout(() => {
         dispatch({ type: 'HIDE' })
@@ -96,11 +101,8 @@ const App = () => {
     }
   }
 
-  const addBlog = async (event) => {
-    const newBlog = await blogService.create(blogObject)
-    setBlogs([...blogs, newBlog])
-    noteFormRef.current.toggleVisibility()
-
+  const addBlog = async (blog, user) => {
+    createBlogMutation.mutate({blog, user})
     dispatch({ type: 'SHOW', payload: 'a new blog created' })
     setTimeout(() => {
       dispatch({ type: 'HIDE' })
@@ -127,7 +129,7 @@ const App = () => {
 
   return (
     <div>
-      {/* <Notification/>
+      <Notification/>
       <h1>blog app</h1>
 
       <div>
@@ -135,11 +137,11 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
       <Togglable buttonLabel='new note' ref={noteFormRef}>
-        <CreateBlog createBlog={addBlog} />
+        <CreateBlog createBlog={addBlog} token={user.token} />
       </Togglable>
       <br></br>
 
-      // <h2>blogs</h2> */}
+      <h2>blogs</h2>
 
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
