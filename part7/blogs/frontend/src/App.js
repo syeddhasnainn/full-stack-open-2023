@@ -8,7 +8,7 @@ import Toggleable from './components/Toggleable'
 import CreateBlog from './components/CreateBlog'
 import {useNotificationDispatch} from './NotificationContext'
 import {useMutation, useQuery, useQueryClient} from 'react-query';
-import {createBlogs, deleteBlogs, getBlogs, updateBlog} from './requests'
+import {createBlogs, deleteBlogs, getBlogs, loginBlog, updateBlog} from './requests'
 
 const App = () => {
 
@@ -42,6 +42,12 @@ const App = () => {
         }
     })
 
+    const loginBlogMutation = useMutation(loginBlog, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('login')
+        }
+    })
+
     const [user, setUser] = useState(null)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -59,11 +65,13 @@ const App = () => {
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
-            const user = await loginService.login({username, password})
+            const user = await loginBlogMutation.mutateAsync({username,password});
+            console.log(user)
             window.localStorage.setItem(
                 'loggedBloguser', JSON.stringify(user)
             )
             blogService.setToken(user.token)
+
             setUser(user)
             setUsername('')
             setPassword('')

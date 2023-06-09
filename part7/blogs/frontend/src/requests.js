@@ -1,6 +1,6 @@
 import axios from "axios";
 const baseUrl = 'http://localhost:3003/api/blogs'
-
+const loginUrl = 'http://localhost:3003/api/login'
 export const getBlogs = () => axios.get(baseUrl).then(res=>res.data)
 
 export const createBlogs = (newBlog) => {
@@ -17,3 +17,8 @@ export const deleteBlogs = (blogObject) => {
 }
 
 export const updateBlog = updatedBlog => axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog).then(res=>res.data)
+
+export const loginBlog = credentials => {
+    console.log(credentials)
+    return axios.post(loginUrl, credentials).then(res=>res.data)
+}
