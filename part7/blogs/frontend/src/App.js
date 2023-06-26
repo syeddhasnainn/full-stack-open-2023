@@ -33,7 +33,7 @@ const App = () => {
   const queryClient = useQueryClient();
 
   const noteFormRef = useRef();
-  console.log(state)
+  
 
   const updateBlogMutation = useMutation(updateBlog, {
     onSuccess: () => {
@@ -92,7 +92,6 @@ const App = () => {
     
     event.preventDefault();
     window.localStorage.clear();
-    console.log('cleaned')
     userDispatch({ type: "LOGOUT", payload: null });
   };
 
@@ -130,8 +129,8 @@ const App = () => {
     return (
       <div>
         <Notification />
-        <h2>Log in to application</h2>
-        <Toggleable buttonLabel="login">
+        
+        <Toggleable buttonLabel="Login">
           <LoginForm
             username={state.username}
             password={state.password}
